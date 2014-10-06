@@ -1,10 +1,15 @@
+#!/usr/bin/env python 
+"""
+Reads a file parsing the commands returns the result of the equation
+Usage is mathparser.py [-h] file
+"""
+
 import os
 import sys
 import math
 import getopt
 
-class OperatorBase(object):
-    """Loads an integer as the second component"""
+class OperatorBase(object):   
     def load(self, value):
         self.value = int(value)
 
@@ -20,7 +25,7 @@ class SquareRootOperator(SingleOperator):
         return math.sqrt(value)
 
 class IntegerSquareRootOperator(SquareRootOperator):
-    #Newton is dead, long live Newtons method
+    #Newtons method
     def apply(self,value):
         x = value
         y = (x + 1) // 2
@@ -85,12 +90,14 @@ class Usage(Exception):
     def __init__(self, msg):
         self.msg = msg
 
+
 #Reading up guide lines for main according to Russo
-#
 def main(argv=None):
     if argv is None:
         argv = sys.argv
     try:
+        scans = 5
+        delay = 0
         try:
             opts, args = getopt.getopt(argv[1:], "h", ["help"])
         except getopt.error, msg:
@@ -99,9 +106,7 @@ def main(argv=None):
             if o in ("-h", "--help"):
                 print __doc__
                 sys.exit(0)
-        # process arguments
-
-        commands = readcommands(argv[1])
+        commands = readcommands(args[0])
 
         result = reduce(lambda total, current : current.apply(total), commands, 0)
         print result
@@ -110,8 +115,6 @@ def main(argv=None):
         print >>sys.stderr, err.msg
         print >>sys.stderr, "for help use --help"
         return 2
-
-
 
 if __name__ == "__main__":
     sys.exit(main())
