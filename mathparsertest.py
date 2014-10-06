@@ -47,3 +47,22 @@ def test_ItShouldNotFailOnEmptyFile():
     f = mathparser.readcommands('Test/emptyTest.file')
     assert len(list(f)) == 0
 
+def test_ItShouldNotParseDivisionByZero():
+    """Given an division by zero it should print an error"""
+    from cStringIO import StringIO
+    placeHolder = sys.stderr
+    try:
+        sys.stderr = StringIO()
+        f = mathparser.readcommands("Test/divisionByZero.file")
+        errorlogs = sys.stderr.getvalue()        
+        assert f is not None
+        assert errorlogs is not None
+    finally:
+        sys.stderr.close()
+        sys.stderr = placeHolder
+
+def test_NegativeSquareNumber():
+    """Test not implemented yet and not covered in code, 
+    current version returns the original number back for negative squares"""
+    assert 1 == 0
+

@@ -18,7 +18,7 @@ class OperatorBase(object):
 
 class SingleOperator(OperatorBase):
     def valid(self):
-        return true
+        return True
 
 class SquareRootOperator(SingleOperator):
     def apply(self,value):
@@ -36,23 +36,26 @@ class IntegerSquareRootOperator(SquareRootOperator):
 
 class TwoComponentOperator(OperatorBase):
     def valid(self):
-        return self.value is not None and self.value.isdigit()
+        return self.value is not None and isinstance(self.value, (int) )
 
 class AddOperator(TwoComponentOperator):    
     def apply(self,value):
-        return value + self.value;
+        return value + self.value
 
 class MultiplyOperator(TwoComponentOperator):
     def apply(self,value):
-        return value * self.value;
+        return value * self.value
 
 class DivisionOperator(TwoComponentOperator):
     def apply(self,value):
-        return value // self.value;
+        return value // self.value
+    
+    def valid(self):
+        return self.value != 0
 
 class SubtractionOperator(TwoComponentOperator):
     def apply(self,value):
-        return value - self.value;
+        return value - self.value
 
 
 class MathOperatorFactory:
@@ -61,7 +64,7 @@ class MathOperatorFactory:
         length = len(values)
         #Cant you splat in python?
         if length < 1:
-            print >>sys.stderr, "Empty row found"
+            print >>sys.stderr, "Empty row found in input file"
             return None
         if values[0] not in self.operators:
             print >>sys.stderr, "{} is not in list of recognized commands {}".format(values[0], self.operators.keys())
@@ -69,8 +72,9 @@ class MathOperatorFactory:
         operator = self.operators[values[0]]()
         if length >= 2 :
             operator.load(values[1])
-        if not operator.valid:
+        if not operator.valid():
             print >>sys.stderr, "command {} value {} is not a valid combination".format(values[0],values[1])
+            return None
         return operator
 
     operators = {
@@ -90,7 +94,6 @@ class Usage(Exception):
     def __init__(self, msg):
         self.msg = msg
 
-
 #Reading up guide lines for main according to Russo
 def main(argv=None):
     if argv is None:
@@ -106,6 +109,7 @@ def main(argv=None):
             if o in ("-h", "--help"):
                 print __doc__
                 sys.exit(0)
+
         commands = readcommands(args[0])
 
         result = reduce(lambda total, current : current.apply(total), commands, 0)
